@@ -1,8 +1,11 @@
-class BaseScanner:
+from abc import ABC, abstractmethod
 
-    def __int__(self):
+class BaseScanner(ABC):
+
+    def __init__(self):
         pass
 
 
+    @abstractmethod
     def scan_for_data(self):
         pass
