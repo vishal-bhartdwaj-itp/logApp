@@ -1,20 +1,53 @@
-.venv/
-.uv/
-
-# --- Ruff (If using Astral's linter/formatter) ---
-.ruff_cache/
-
-# --- Python Build & Caching ---
+```gitignore id="a8xpmv"
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyo
+*.pyd
+*.so
+
+# Virtual Environment
+.venv/
+venv/
+
+# Environment Variables
+.env
+
+# Runtime Logs
+runtime_logs/
+*.log
+
+# Data
+data/checkpoints/
+data/dead_letter/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Build
 build/
 dist/
-wheels/
 *.egg-info/
 
-# --- Environment Variables & Secrets ---
-.env
-.env.local
+# Docker
+*.pid
 
-data/
+# Grafana
+grafana/data/
+
+# Temporary
+tmp/
+temp/
+```
