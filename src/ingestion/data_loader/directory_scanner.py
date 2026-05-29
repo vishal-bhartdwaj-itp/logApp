@@ -93,7 +93,7 @@ class DirectoryReader(BaseScanner):
                         break
 
                     
-                    if not self._dummy_type_checker(line):
+                    if not self._dummy_type_checker(line): # error here
                         # print(f" Type validation failed at byte {current_line_offset}. Checkpoint saved.") 
                         # Save the current line's offset so we attempt it again next runtime
                         self.state_manager.save_state(inode, file_path, current_line_offset)

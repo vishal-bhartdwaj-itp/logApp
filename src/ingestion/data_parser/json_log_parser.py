@@ -1,4 +1,4 @@
-from base_log_parser import BaseLogParser
+from .base_log_parser import BaseLogParser
 
 class JsonLogParser(BaseLogParser):
 
