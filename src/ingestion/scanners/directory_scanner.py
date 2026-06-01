@@ -145,7 +145,7 @@ logger = setup_logger()
 
 class DirectoryReader:
 
-    def __init__(self, base_dir="data/logs"):
+    def __init__(self, base_dir="data/logs/2026-04-02"):
 
         self.base_dir = base_dir
 

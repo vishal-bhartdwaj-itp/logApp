@@ -3,7 +3,7 @@ import time
 
 from ingestion.log_type_checker import LogTypeChecker
 
-from parsers.parser_factory import ParserFactory
+from parser.parser_factory import ParserFactory
 
 from pipeline.queues import raw_queue
 
