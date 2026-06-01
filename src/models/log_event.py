@@ -25,6 +25,9 @@ class LogEvent:
 
     message: str
 
+    # NEW
+    trace: str = ""
+
     http: HttpInfo = field(default_factory=HttpInfo)
 
     metadata: dict[str, Any] = field(default_factory=dict)

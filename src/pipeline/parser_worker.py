@@ -11,6 +11,8 @@ from pipeline.batch_processor import BatchProcessor
 
 from observability.logging_config import setup_logger
 
+from pipeline.dead_letter_handler import DeadLetterHandler
+
 from observability.metrics import (
     PROCESSED_LOGS,
     PARSE_FAILURES,
@@ -32,6 +34,8 @@ class ParserWorker:
         self.batch_processor = BatchProcessor()
 
         self.worker_count = worker_count
+
+        self.dlq = DeadLetterHandler()
 
     def start(self):
 
@@ -71,10 +75,17 @@ class ParserWorker:
                     if log_type == "UNKNOWN":
 
                         UNKNOWN_LOGS.inc()
+                        
+                        self.dlq.write(
+                            raw_log=raw_line,
+                            reason="unknown_log_type"
+                        )
 
                         logger.warning(
                             "Unknown log detected"
                         )
+
+                        continue
 
                     parser = ParserFactory.get_parser(
                         log_type
@@ -92,6 +103,12 @@ class ParserWorker:
                 except Exception as e:
 
                     PARSE_FAILURES.inc()
+
+                    self.dlq.write(
+                        raw_log=raw_line,
+                        reason="parser_exception",
+                        error=str(e)
+                    )
 
                     logger.exception(
                         f"Parsing failed: {e}"
