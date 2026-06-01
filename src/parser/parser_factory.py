@@ -16,4 +16,4 @@ class ParserFactory:
             "UNKNOWN": AgenticLogParser()
         }
 
-        return parsers.get(log_type)
+        return parsers.get(log_type,AgenticLogParser())

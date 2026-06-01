@@ -122,6 +122,7 @@
 
 
 # new_code
+import re
 import os
 import time
 from collections import deque
@@ -144,6 +145,10 @@ logger = setup_logger()
 
 
 class DirectoryReader:
+
+    LOG_START_PATTERN = re.compile(
+        r"^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2},\d{3}"
+    )
 
     def __init__(self, base_dir="data/logs"):
 
@@ -216,6 +221,8 @@ class DirectoryReader:
 
                     f.seek(last_offset)
 
+                    current_event = []
+
                     while True:
 
                         line = f.readline()
@@ -223,16 +230,37 @@ class DirectoryReader:
                         if not line:
                             break
 
-                        raw_queue.put(line)
+                        if self.LOG_START_PATTERN.match(line):
 
-                        QUEUE_SIZE.set(raw_queue.qsize())
+                            if current_event:
 
-                        self.state_manager.save_state(
-                            inode,
-                            file_path,
-                            f.tell()
+                                raw_event = "".join(current_event)
+
+                                raw_queue.put(raw_event)
+
+                                QUEUE_SIZE.set(
+                                    raw_queue.qsize()
+                                )
+
+                            current_event = [line]
+
+                        else:
+
+                            current_event.append(line)
+
+                    # push final event
+                    if current_event:
+
+                        raw_event = "".join(current_event)
+
+                        raw_queue.put(raw_event)
+
+                        QUEUE_SIZE.set(
+                            raw_queue.qsize()
                         )
 
-                SCANNER_READ_TIME.observe(
-                    time.time() - start
-                )
+                    self.state_manager.save_state(
+                        inode,
+                        file_path,
+                        f.tell()
+                    )
