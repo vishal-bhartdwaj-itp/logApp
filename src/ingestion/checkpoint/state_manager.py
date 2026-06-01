@@ -22,7 +22,7 @@ class StateManager:
                 CREATE TABLE IF NOT EXISTS file_state (
                     inode INTEGER PRIMARY KEY,
                     filename TEXT,
-                    byte_offset INTEGER,
+                    byte_offset BIGINT,
                     last_timestamp REAL
                 )
                 """
