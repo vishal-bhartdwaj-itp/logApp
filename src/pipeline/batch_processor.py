@@ -28,15 +28,26 @@ class BatchProcessor:
 
     def add(self, event):
 
-        self.batch.append(event)
+        should_flush=False
 
-        if len(self.batch) >= self.batch_size:
+        with self.lock:
+            self.batch.append(event)
+
+            if len(self.batch)>=self.batch_size:
+                should_flush=True
+
+        if should_flush:
             self.flush()
 
     def flush(self):
 
-        if not self.batch:
-            return
+        with self.lock:
+
+            if not self.batch:
+                return
+
+            events_to_push = self.batch.copy()
+            self.batch.clear()
 
         try:
 
@@ -52,7 +63,10 @@ class BatchProcessor:
                 f"Loki push failed: {e}"
             )
 
-        self.batch.clear()
+            with self.lock:
+                self.batch = events_to_push + self.batch
+
+            raise
 
     def _flush_loop(self):
 
