@@ -45,7 +45,8 @@ class LokiSink:
                                 "service": event.service_name,
                                 "level": event.log_level,
                                 "environment": event.environment,
-                                "type": event.log_type
+                                "type": event.log_type,
+                                "date":event.timestamp.strftime("%Y-%m-%d")
                             },
                             "values": [
                                 [
@@ -77,6 +78,15 @@ class LokiSink:
 
                 logger.info(
                     f"Pushed {len(events)} logs to Loki"
+                )
+
+            except requests.exceptions.HTTPError as e:
+
+                LOKI_PUSH_FAILURES.inc()
+
+                body=e.response.text[:500] if e.response is not None else ""
+                logger.exception(
+                    f"Loki push failed: {e} | body : {body}"
                 )
 
             except Exception as e:
