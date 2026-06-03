@@ -48,10 +48,10 @@ class BatchProcessor:
 
         try:
 
-            self.sink.push(events_to_send)
+            self.sink.push(events_to_push)
 
             logger.info(
-                f"Flushed {len(events_to_send)} logs to Loki"
+                f"Flushed {len(events_to_push)} logs to Loki"
             )
 
         except Exception as e:
