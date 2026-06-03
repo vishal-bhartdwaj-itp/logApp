@@ -2,9 +2,7 @@ import threading
 import time
 
 from storage.loki_sink import LokiSink
-
 from observability.logging_config import setup_logger
-
 
 logger = setup_logger()
 
@@ -12,11 +10,10 @@ logger = setup_logger()
 class BatchProcessor:
 
     def __init__(self):
+        self.lock = threading.Lock()
 
         self.batch = []
-
         self.batch_size = 100
-
         self.flush_interval = 5
 
         self.sink = LokiSink()
@@ -51,10 +48,10 @@ class BatchProcessor:
 
         try:
 
-            self.sink.push(self.batch)
+            self.sink.push(events_to_send)
 
             logger.info(
-                f"Flushed {len(self.batch)} logs to Loki"
+                f"Flushed {len(events_to_send)} logs to Loki"
             )
 
         except Exception as e:
