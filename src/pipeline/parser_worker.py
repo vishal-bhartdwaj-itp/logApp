@@ -90,7 +90,7 @@ class ParserWorker:
                     parser = ParserFactory.get_parser(log_type)
 
                     event = parser.parse(raw_line, parsed_data)
-
+                    # print (f"\n{event}")
                     span_ctx = otel_trace.get_current_span().get_span_context()
                     if span_ctx.is_valid:
                         event.trace = format(span_ctx.trace_id, "032x")

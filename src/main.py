@@ -2,6 +2,8 @@ import signal
 import sys
 import time
 
+from dotenv import load_dotenv
+
 from ingestion.scanners.directory_scanner import DirectoryReader
 
 from pipeline.parser_worker import ParserWorker
@@ -13,6 +15,8 @@ from observability.logging_config import setup_logger
 from ingestion.http_ingestion import start_http_ingestion
 
 logger = setup_logger()
+
+load_dotenv()
 
 SCAN_INTERVAL_SECONDS = 30
 
