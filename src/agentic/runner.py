@@ -4,7 +4,8 @@ Each agent module calls create_runner() to get an InMemoryRunner bound to its
 Agent instance, then calls run_and_get_response() to drive a single request
 through the full agentic loop (tool calls handled automatically by ADK).
 """
-
+from dotenv import load_dotenv
+# import os
 import uuid
 
 from google.adk.agents import Agent
@@ -12,6 +13,11 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
+
+load_dotenv()
+
+
+# print(os.getenv("GOOGLE_API_KEY"))
 
 def create_runner(agent: Agent, app_name: str = "logapp") -> Runner:
     """Return a Runner wired to *agent* with in-memory session storage.
