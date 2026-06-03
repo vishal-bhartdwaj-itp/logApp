@@ -221,7 +221,11 @@ class DirectoryReader:
 
                     f.seek(last_offset)
 
-                    current_event = []
+                    current_event: list[str] = []
+                    # True when current_event started with a LOG_START_PATTERN
+                    # line — meaning continuations (stack traces) should be
+                    # appended rather than emitted as separate events.
+                    event_has_timestamp = False
 
                     while True:
 
@@ -231,22 +235,28 @@ class DirectoryReader:
                             break
 
                         if self.LOG_START_PATTERN.match(line):
-
+                            # New timestamped event — flush whatever we have
                             if current_event:
-
-                                raw_event = "".join(current_event)
-
-                                raw_queue.put(raw_event)
-
-                                QUEUE_SIZE.set(
-                                    raw_queue.qsize()
-                                )
+                                raw_queue.put("".join(current_event))
+                                QUEUE_SIZE.set(raw_queue.qsize())
 
                             current_event = [line]
+                            event_has_timestamp = True
+
+                        elif event_has_timestamp:
+                            # Continuation of a multi-line event (stack trace
+                            # or wrapped message after an APPEVOLVE header)
+                            current_event.append(line)
 
                         else:
+                            # Non-timestamped line (syslog, NGINX, JSON, etc.)
+                            # Each such line is its own independent event.
+                            if current_event:
+                                raw_queue.put("".join(current_event))
+                                QUEUE_SIZE.set(raw_queue.qsize())
 
-                            current_event.append(line)
+                            current_event = [line]
+                            event_has_timestamp = False
 
                     # push final event
                     if current_event:
