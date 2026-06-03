@@ -31,7 +31,8 @@ def setup_logger():
 
     # console_handler.setFormatter(formatter)
 
-    logger.addHandler(file_handler)
+    if not logger.handlers:
+        logger.addHandler(file_handler)
 
     # logger.addHandler(console_handler)
 

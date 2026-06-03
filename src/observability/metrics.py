@@ -19,6 +19,11 @@ UNKNOWN_LOGS = Counter(
     "Total unknown logs"
 )
 
+AGENTIC_PARSED = Counter(
+    "agentic_parsed_total",
+    "Logs successfully parsed by the agentic (LLM) parser"
+)
+
 QUEUE_SIZE = Gauge(
     "raw_queue_size",
     "Current raw queue size"

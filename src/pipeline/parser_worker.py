@@ -1,6 +1,8 @@
 import threading
 import time
 
+from opentelemetry import trace as otel_trace
+
 from ingestion.log_type_checker import LogTypeChecker
 
 from parser.parser_factory import ParserFactory
@@ -17,6 +19,7 @@ from observability.metrics import (
     PROCESSED_LOGS,
     PARSE_FAILURES,
     UNKNOWN_LOGS,
+    AGENTIC_PARSED,
     ACTIVE_WORKERS,
     PROCESSING_TIME,
 )
@@ -36,6 +39,10 @@ class ParserWorker:
         self.worker_count = worker_count
 
         self.dlq = DeadLetterHandler()
+
+    def drain(self):
+        raw_queue.join()
+        self.batch_processor.flush()
 
     def start(self):
 
@@ -64,6 +71,8 @@ class ParserWorker:
 
             start = time.time()
 
+            log_type = "UNKNOWN"
+
             with tracer.start_as_current_span("parse_log"):
 
                 try:
@@ -73,30 +82,23 @@ class ParserWorker:
                     )
 
                     if log_type == "UNKNOWN":
-
                         UNKNOWN_LOGS.inc()
-                        
-                        self.dlq.write(
-                            raw_log=raw_line,
-                            reason="unknown_log_type"
+                        logger.info(
+                            "Unknown log type — attempting agentic parsing"
                         )
 
-                        logger.warning(
-                            "Unknown log detected"
-                        )
+                    parser = ParserFactory.get_parser(log_type)
 
-                        continue
+                    event = parser.parse(raw_line, parsed_data)
 
-                    parser = ParserFactory.get_parser(
-                        log_type
-                    )
-
-                    event = parser.parse(
-                        raw_line,
-                        parsed_data
-                    )
+                    span_ctx = otel_trace.get_current_span().get_span_context()
+                    if span_ctx.is_valid:
+                        event.trace = format(span_ctx.trace_id, "032x")
 
                     self.batch_processor.add(event)
+
+                    if log_type == "UNKNOWN":
+                        AGENTIC_PARSED.inc()
 
                     PROCESSED_LOGS.inc()
 
@@ -104,9 +106,15 @@ class ParserWorker:
 
                     PARSE_FAILURES.inc()
 
+                    reason = (
+                        "unknown_log_type"
+                        if log_type == "UNKNOWN"
+                        else "parser_exception"
+                    )
+
                     self.dlq.write(
                         raw_log=raw_line,
-                        reason="parser_exception",
+                        reason=reason,
                         error=str(e)
                     )
 
