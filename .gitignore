@@ -20,6 +20,7 @@ runtime_logs/
 # Data
 data/checkpoints/
 data/dead_letter/
+data/logs
 
 # IDE
 .vscode/
