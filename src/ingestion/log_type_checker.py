@@ -86,7 +86,7 @@ class LogTypeChecker:
     @staticmethod
     def check_log_type(entry: str):
 
-        clean_entry = entry.rstrip("\n")
+        clean_entry = entry.splitlines()[0] if entry.strip() else ""
 
         if not clean_entry.strip():
             return "EMPTY", None
