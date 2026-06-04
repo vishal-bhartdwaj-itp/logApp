@@ -24,7 +24,7 @@ load_dotenv()
 logger = setup_logger()
 
 
-def build_agent(model: str = "gemini-2.5-flash-lite") -> Agent:
+def build_agent(model: str = "gemini-2.5-flash") -> Agent:
     """Return a configured ADK Agent with all Loki tools wired in."""
     return Agent(
         name="error_analysis_agent",
@@ -34,7 +34,7 @@ def build_agent(model: str = "gemini-2.5-flash-lite") -> Agent:
     )
 
 
-def analyze(hours: int = 1, model: str = "gemini-2.5-flash-lite") -> str:
+def analyze(hours: int = 1, model: str = "gemini-2.5-flash") -> str:
     """Run the error analysis agent and return a Markdown report.
 
     Args:

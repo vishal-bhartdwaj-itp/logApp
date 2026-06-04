@@ -1,4 +1,3 @@
-```gitignore id="a8xpmv"
 # Python
 __pycache__/
 *.py[cod]
@@ -51,4 +50,7 @@ grafana/data/
 # Temporary
 tmp/
 temp/
-```
+
+# ADK
+
+.adk
