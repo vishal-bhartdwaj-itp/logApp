@@ -7,7 +7,7 @@
   "schemaVersion": 39,
   "version": 1,
   "refresh": "30s",
-  "time": { "from": "now-90d", "to": "now" },
+  "time": { "from": "now-7d", "to": "now" },
   "timezone": "browser",
   "templating": {
     "list": [
@@ -30,16 +30,17 @@
   "panels": [
     {
       "id": 1,
-      "title": "Error Rate by Service (logs/min)",
+      "title": "Error Rate by Service",
       "type": "timeseries",
       "datasource": { "type": "loki", "uid": "loki" },
       "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
       "targets": [
         {
           "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "sum by (service) (count_over_time({type=~\"JSON|NGINX|APPEVOLVE|AGENTIC\", service=~\"$service\", level=~\"ERROR|CRITICAL\"}[1m]))",
+          "expr": "sum by (service) (count_over_time({type=~\"JSON|NGINX|APPEVOLVE|AGENTIC\", service=~\"$service\", level=~\"ERROR|CRITICAL\"}[$__interval]))",
           "legendFormat": "{{service}}",
-          "refId": "A"
+          "refId": "A",
+          "interval": "30m"
         }
       ],
       "options": { "tooltip": { "mode": "multi" } },

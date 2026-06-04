@@ -28,7 +28,7 @@ class AppEvolveLogParser(BaseLogParser):
 
             log_type="APPEVOLVE",
 
-            service_name="neurostack",
+            service_name="appevolve",
 
             environment="production",
 
