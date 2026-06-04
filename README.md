@@ -385,5 +385,5 @@ The `LogParserAgent` uses `generate_content_config` to enforce `response_mime_ty
 ## Authors and Contributions
 
 Suyash Srivastava - 15 commits, scaffolding project, merge conflict reolutions, and configurations of the grafana stack along with ingestion pipeline.
-Pundrik Shayta - 8 commits , majorly worked on the log parsing pipeline, the worker and queue architecture, multithreading, and Otel setup.
+Pundrik Shayta - 12 commits , majorly worked on the log parsing pipeline, the worker and queue architecture, multithreading, and Otel setup.
 Vishal Bhartdwaj - 5 commits, mainly worked on the ADK agents and tools. 
