@@ -8,25 +8,25 @@ LogApp is a production-grade log processing pipeline with a full observability s
 
 ```
                          ┌─────────────────────────────────────────┐
-                         │              Ingestion Layer             │
-                         │                                          │
-  data/logs/  ──────▶  DirectoryReader                             │
-                         │  (SQLite checkpoint, multi-line merge)   │
-  HTTP POST   ──────▶  FastAPI /ingest (port 8001)                 │
-                         └──────────────┬──────────────────────────┘
+                         │              Ingestion Layer            │
+                         │                                         │
+  data/logs/  ──────▶  DirectoryReader                            │
+                         │  (SQLite checkpoint, multi-line merge)  │
+  HTTP POST   ──────▶  FastAPI /ingest (port 8001)                | 
+                         └──────────────┬─────────────────────────┘
                                         │
                                    raw_queue
                                 (maxsize 50 000)
                                         │
                          ┌──────────────▼──────────────────────────┐
-                         │           4× ParserWorker threads        │
-                         │                                          │
-                         │  LogTypeChecker ──▶ ParserFactory        │
-                         │       │                   │              │
-                         │  JSON │ NGINX │ APPEVOLVE │ AGENTIC      │
-                         │  parser  parser   parser    (ADK/Gemini) │
-                         │                                          │
-                         │  OTel trace ID injected into LogEvent    │
+                         │           4× ParserWorker threads       │
+                         │                                         │
+                         │  LogTypeChecker ──▶ ParserFactory       │
+                         │                                         │
+                         │  JSON │ NGINX │ APPEVOLVE │ AGENTIC     │
+                         │  parser  parser   parser    (ADK/Gemini)│
+                         │                                         │
+                         │  OTel trace ID injected into LogEvent   │
                          └──────────────┬──────────────────────────┘
                                         │
                               BatchProcessor (100 logs / 5 s)
@@ -34,12 +34,12 @@ LogApp is a production-grade log processing pipeline with a full observability s
                                     LokiSink
                                         │
                     ┌───────────────────▼──────────────────────────┐
-                    │                Grafana Stack                  │
+                    │                Grafana Stack                 │
                     │                                              │
                     │   Loki ◀── Alloy ◀── runtime_logs/          │
                     │   Prometheus ◀── app metrics (port 8000)     │
                     │   Tempo ◀── OTLP traces (port 4317)          │
-                    │   Grafana (port 3000) ── 3 pre-built boards  │
+                    │   Grafana (port 3000) ── pre-built boards    │
                     └──────────────────────────────────────────────┘
 
 Failed / unparseable logs ──▶ data/dead_letter/  (JSON files)
@@ -382,8 +382,8 @@ The `LogParserAgent` uses `generate_content_config` to enforce `response_mime_ty
 
 ---
 
-## Authors
+## Authors and Contributions
 
-Suyash Srivastava,
-Pundrik Shayta
-Vishal Bhartdwaj
+Suyash Srivastava - 15 commits, scaffolding project, merge conflict reolutions, and configurations of the grafana stack along with ingestion pipeline.
+Pundrik Shayta - 8 commits , majorly worked on the log parsing pipeline, the worker and queue architecture, multithreading, and Otel setup.
+Vishal Bhartdwaj - 5 commits, mainly worked on the ADK agents and tools. 
